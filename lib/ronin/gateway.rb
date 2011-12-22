@@ -15,11 +15,13 @@ class Ronin::Gateway
 
   def create_payment_method(params={})
     response = post('payment_methods', :payment_method => params)
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
     process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
   def find_payment_method(token)
     response = get('payment_methods', token)
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
     process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 

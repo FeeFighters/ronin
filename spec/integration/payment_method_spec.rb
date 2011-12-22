@@ -110,4 +110,32 @@ describe "PaymentMethod" do
       end
     end
   end
+
+
+  describe '#find' do
+    before do
+      @token =  gateway.create_payment_method(@params).token
+    end
+    it 'should be successful' do
+      gateway.find_payment_method(@token).tap do |pm|
+        pm.is_sensitive_data_valid.should be_true
+        pm.is_expiration_valid.should be_true
+        pm.first_name.should  == @params[:first_name]
+        pm.last_name.should   == @params[:last_name]
+        pm.address_1.should   == @params[:address_1]
+        pm.address_2.should   == @params[:address_2]
+        pm.city.should        == @params[:city]
+        pm.state.should       == @params[:state]
+        pm.zip.should         == @params[:zip]
+        pm.last_four_digits.should == @params[:card_number][-4, 4]
+        pm.expiry_month.should  == @params[:expiry_month].to_i
+        pm.expiry_year.should   == @params[:expiry_year].to_i
+      end
+    end
+    it 'should fail on an invalid token' do
+      lambda do
+        gateway.find_payment_method('abc123')
+      end.should raise_error(Ronin::ResourceNotFound)
+    end
+  end
 end
