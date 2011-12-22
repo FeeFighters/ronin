@@ -15,12 +15,12 @@ class Ronin::Gateway
 
   def create_payment_method(params={})
     response = post('payment_methods', :payment_method => params)
-    from_xml(Ronin::PaymentMethod, 'payment_method', response.body)
+    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
   def find_payment_method(token)
     response = get('payment_methods', token)
-    from_xml(Ronin::PaymentMethod, 'payment_method', response.body)
+    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
   private
@@ -35,12 +35,14 @@ class Ronin::Gateway
     request.perform
   end
 
-  def from_xml(klass, key, attributes)
+  def process_response(klass, key, attributes)
     attributes = Hash.from_xml(attributes)[key]
     obj = klass.new
     obj.attributes = attributes
     mod = Module.new do
       obj.attributes.keys.each do |k|
+        next if k == "messages"
+
         define_method(k) do
           return self.attributes[k]
         end
@@ -51,6 +53,7 @@ class Ronin::Gateway
       end
     end
     obj.send(:extend, mod)
+    obj.process_response_errors(obj.attributes['messages'])
     obj
   end
 end
