@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.5"
 
   s.add_dependency 'activesupport'
+  s.add_dependency 'i18n'
   s.add_dependency 'httparty'
 
   s.add_development_dependency "bundler", ">= 1.0.0"
