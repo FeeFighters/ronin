@@ -28,6 +28,7 @@ GEM
       rbx-require-relative (> 0.0.4)
     multi_json (1.0.4)
     multi_xml (0.4.1)
+    net-http-spy (0.2.1)
     rbx-require-relative (0.0.5)
     rspec (2.7.0)
       rspec-core (~> 2.7.0)
@@ -48,6 +49,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (>= 1.0.0)
+  net-http-spy
   ronin!
   rspec (>= 2.6.0)
   rspec_junit_formatter!

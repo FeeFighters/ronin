@@ -31,6 +31,40 @@ class Ronin::Gateway
     process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
+  # create transactions
+  def authorize(token, amount, processor_token, params={})
+    transaction_params = params.merge(:payment_method_token => token, :amount => amount)
+    response = post("processors/#{processor_token}/authorize", :transaction => transaction_params)
+
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
+    process_response(Ronin::Transaction, 'transaction', response.body)
+  end
+
+  def purchase(token, amount, processor_token, params={})
+    transaction_params = params.merge(:payment_method_token => token, :amount => amount)
+    response = post("processors/#{processor_token}/purchase", :transaction => transaction_params)
+
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
+    process_response(Ronin::Transaction, 'transaction', response.body)
+  end
+
+  #transaction methods
+  def capture(transaction_token, amount=nil)
+    transaction_method('capture', transaction_token, amount)
+  end
+
+  def reverse(transaction_token, amount=nil)
+    transaction_method('capture', transaction_token, amount)
+  end
+
+  def void(transaction_token, amount=nil)
+    transaction_method('capture', transaction_token, amount)
+  end
+
+  def credit(transaction_token, amount=nil)
+    transaction_method('capture', transaction_token, amount)
+  end
+
   private
 
   def get(uri, id)
@@ -46,6 +80,14 @@ class Ronin::Gateway
   def put(uri, id, params)
     request = HTTParty::Request.new(Net::HTTP::Put, "#{@site}#{uri}/#{id}.xml", :body => params, :format => :xml, :basic_auth => @merchant_auth)
     request.perform
+  end
+
+  def transaction_method(method, token, amount=nil)
+    transaction_params = {:amount => amount}
+    response = post("transactions/#{token}/#{method}", :transaction => transaction_params)
+
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
+    process_response(Ronin::Transaction, 'transaction', response.body)
   end
 
   def process_response(klass, key, attributes)
@@ -66,7 +108,7 @@ class Ronin::Gateway
       end
     end
     obj.send(:extend, mod)
-    obj.process_response_errors(obj.attributes['messages'])
+    obj.process_response_errors(obj.attributes)
     obj
   end
 end

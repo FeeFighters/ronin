@@ -4,19 +4,7 @@ describe "PaymentMethod" do
   let(:gateway) { Ronin::Gateway.new(DEFAULT_OPTIONS.clone) }
 
   before do
-    @params = {
-      :first_name   => "FirstName",
-      :last_name    => "LastName",
-      :address_1    => "123 Main St.",
-      :address_2    => "Apt #3",
-      :city         => "Chicago",
-      :state        => "IL",
-      :zip          => "10101",
-      :card_number  => "4111-1111-1111-1111",
-      :cvv          => "123",
-      :expiry_month => '03',
-      :expiry_year  => "2015",
-    }
+    @params = payment_method_attributes
   end
 
   describe 'S2S #create' do
@@ -72,11 +60,6 @@ describe "PaymentMethod" do
         pm = gateway.create_payment_method @params.merge(:cvv => '111111')
         pm.is_sensitive_data_valid.should be_false
         pm.errors['input.cvv'].should == [ 'The CVV was too long.' ]
-      end
-      it 'should return not_numeric' do
-        pm = gateway.create_payment_method @params.merge(:cvv => 'abcd1')
-        pm.is_sensitive_data_valid.should be_false
-        pm.errors['input.cvv'].should == [ 'The CVV was invalid.' ]
       end
     end
 

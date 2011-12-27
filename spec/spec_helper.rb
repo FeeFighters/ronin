@@ -11,7 +11,13 @@ RSpec.configure do |c|
   end
 end
 
+include Samurai::Helpers
+
+# uncomment below to see requests
+# require 'net-http-spy'
+
 require 'ronin'
+
 DEFAULT_OPTIONS = {
   :site => SITE,
   :merchant_key => ENV['merchant_key'] || 'a1ebafb6da5238fb8a3ac9f6',
