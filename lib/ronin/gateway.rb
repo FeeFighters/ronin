@@ -32,37 +32,35 @@ class Ronin::Gateway
   end
 
   # create transactions
-  def authorize(token, amount, processor_token, params={})
-    transaction_params = params.merge(:payment_method_token => token, :amount => amount)
-    response = post("processors/#{processor_token}/authorize", :transaction => transaction_params)
+  def authorize(payment_method_token, amount, processor_token, params={})
+    create_transaction(payment_method_token, amount, processor_token, 'authorize', params)
+  end
 
+  def purchase(payment_method_token, amount, processor_token, params={})
+    create_transaction(payment_method_token, amount, processor_token, 'purchase', params)
+  end
+
+  def find_transaction(reference_id)
+    response = get('transactions', reference_id)
     raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
     process_response(Ronin::Transaction, 'transaction', response.body)
   end
 
-  def purchase(token, amount, processor_token, params={})
-    transaction_params = params.merge(:payment_method_token => token, :amount => amount)
-    response = post("processors/#{processor_token}/purchase", :transaction => transaction_params)
-
-    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
-    process_response(Ronin::Transaction, 'transaction', response.body)
-  end
-
-  #transaction methods
+  # transaction methods
   def capture(transaction_token, amount=nil)
     transaction_method('capture', transaction_token, amount)
   end
 
   def reverse(transaction_token, amount=nil)
-    transaction_method('capture', transaction_token, amount)
+    transaction_method('reverse', transaction_token, amount)
   end
 
   def void(transaction_token, amount=nil)
-    transaction_method('capture', transaction_token, amount)
+    transaction_method('void', transaction_token, amount)
   end
 
   def credit(transaction_token, amount=nil)
-    transaction_method('capture', transaction_token, amount)
+    transaction_method('credit', transaction_token, amount)
   end
 
   private
@@ -80,6 +78,14 @@ class Ronin::Gateway
   def put(uri, id, params)
     request = HTTParty::Request.new(Net::HTTP::Put, "#{@site}#{uri}/#{id}.xml", :body => params, :format => :xml, :basic_auth => @merchant_auth)
     request.perform
+  end
+
+  def create_transaction(token, amount, processor_token, method, params={})
+    transaction_params = params.merge(:payment_method_token => token, :amount => amount)
+    response = post("processors/#{processor_token}/#{method}", :transaction => transaction_params)
+
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
+    process_response(Ronin::Transaction, 'transaction', response.body)
   end
 
   def transaction_method(method, token, amount=nil)

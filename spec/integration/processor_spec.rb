@@ -1,12 +1,32 @@
 require 'spec_helper'
 
-describe "Processor" do
+describe "Creating transactions" do
   let(:gateway) { Ronin::Gateway.new(DEFAULT_OPTIONS.clone) }
   let(:processor_token) {DEFAULT_OPTIONS[:processor_token]}
 
   before :each do
     @rand = rand(1000)
     @payment_method_token = gateway.create_payment_method(payment_method_attributes).token
+  end
+
+  describe "find_transaction" do
+    it "should be successful" do
+      purchase = gateway.purchase(@payment_method_token, 100.0, processor_token, {
+        :descriptor => "descriptor",
+        :custom => "custom_data",
+        :billing_reference => "ABC123#{@rand}",
+        :customer_reference => "Customer (123)",
+      })
+
+      transaction = gateway.find_transaction(purchase.reference_id)
+      transaction.token.should == purchase.token
+    end
+
+    it "should fail on an invalid token" do
+      lambda do
+        gateway.find_transaction('abc123')
+      end.should raise_error(Ronin::ResourceNotFound)
+    end
   end
 
   describe 'purchase' do
