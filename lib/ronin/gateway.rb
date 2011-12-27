@@ -25,6 +25,12 @@ class Ronin::Gateway
     process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
+  def update_payment_method(token, params={})
+    response = put('payment_methods', token, :payment_method => params)
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
+    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
+  end
+
   private
 
   def get(uri, id)
@@ -34,6 +40,11 @@ class Ronin::Gateway
 
   def post(uri, params)
     request = HTTParty::Request.new(Net::HTTP::Post, "#{@site}#{uri}.xml", :body => params, :format => :xml, :basic_auth => @merchant_auth)
+    request.perform
+  end
+
+  def put(uri, id, params)
+    request = HTTParty::Request.new(Net::HTTP::Put, "#{@site}#{uri}/#{id}.xml", :body => params, :format => :xml, :basic_auth => @merchant_auth)
     request.perform
   end
 
