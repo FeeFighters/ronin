@@ -2,6 +2,7 @@ module Ronin
   class ResourceNotFound < StandardError
   end
 end
+require 'ronin/connection'
 require 'ronin/gateway'
 require 'ronin/models/base'
 require 'ronin/models/payment_method'

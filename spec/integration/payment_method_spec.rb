@@ -114,7 +114,7 @@ describe "PaymentMethod" do
     end
 
     it 'should be successful' do
-      payment_method = gateway.update_payment_method @pm.token, @new_params
+      payment_method = @pm.update @new_params
       gateway.find_payment_method(payment_method.token).tap do |pm|
         pm.is_sensitive_data_valid.should be_true
         pm.is_expiration_valid.should be_true
@@ -136,7 +136,7 @@ describe "PaymentMethod" do
         :card_number => '****************',
         :cvv => '***',
       })
-      payment_method = gateway.update_payment_method @pm.token, _params
+      payment_method = @pm.update _params
       gateway.find_payment_method(payment_method.token).tap do |pm|
         pm.is_sensitive_data_valid.should be_true
         pm.is_expiration_valid.should be_true
@@ -154,61 +154,61 @@ describe "PaymentMethod" do
     end
     describe 'fail on input.card_number' do
       it 'should return too_short' do
-        payment_method = gateway.update_payment_method @pm.token, @new_params.merge(:card_number => '4111-1')
+        payment_method = @pm.update @new_params.merge(:card_number => '4111-1')
         payment_method.is_sensitive_data_valid.should be_false
         payment_method.errors['input.card_number'].should == [ 'The card number was too short.' ]
       end
       it 'should return too_long' do
-        payment_method = gateway.update_payment_method @pm.token, @new_params.merge(:card_number => '4111-1111-1111-1111-11')
+        payment_method = @pm.update @new_params.merge(:card_number => '4111-1111-1111-1111-11')
         payment_method.is_sensitive_data_valid.should be_false
         payment_method.errors['input.card_number'].should == [ 'The card number was too long.' ]
       end
       it 'should return failed_checksum' do
-        payment_method = gateway.update_payment_method @pm.token, @new_params.merge(:card_number => '4111-1111-1111-1234')
+        payment_method = @pm.update @new_params.merge(:card_number => '4111-1111-1111-1234')
         payment_method.is_sensitive_data_valid.should be_false
         payment_method.errors['input.card_number'].should == [ 'The card number was invalid.' ]
       end
     end
+
     describe 'fail on input.cvv' do
       it 'should return too_short' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:cvv => '1')
+        payment_method = @pm.update @params.merge(:cvv => '1')
         payment_method.is_sensitive_data_valid.should be_false
         payment_method.errors['input.cvv'].should == [ 'The CVV was too short.' ]
       end
+
       it 'should return too_long' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:cvv => '111111')
+        payment_method = @pm.update @params.merge(:cvv => '111111')
         payment_method.is_sensitive_data_valid.should be_false
         payment_method.errors['input.cvv'].should == [ 'The CVV was too long.' ]
       end
-      it 'should return not_numeric' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:cvv => 'abcd1')
-        payment_method.is_sensitive_data_valid.should be_false
-        payment_method.errors['input.cvv'].should == [ 'The CVV was invalid.' ]
-      end
     end
+
     describe 'fail on input.expiry_month' do
       it 'should return is_blank' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:expiry_month => '')
+        payment_method = @pm.update @params.merge(:expiry_month => '')
         payment_method.is_sensitive_data_valid.should be_true
         payment_method.is_expiration_valid.should be_false
         payment_method.errors['input.expiry_month'].should == [ 'The expiration month was blank.' ]
       end
+
       it 'should return is_invalid' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:expiry_month => 'abcd')
+        payment_method = @pm.update @params.merge(:expiry_month => 'abcd')
         payment_method.is_sensitive_data_valid.should be_true
         payment_method.is_expiration_valid.should be_false
         payment_method.errors['input.expiry_month'].should == [ 'The expiration month was invalid.' ]
       end
     end
+
     describe 'fail on input.expiry_year' do
       it 'should return is_blank' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:expiry_year => '')
+        payment_method = @pm.update @params.merge(:expiry_year => '')
         payment_method.is_sensitive_data_valid.should be_true
         payment_method.is_expiration_valid.should be_false
         payment_method.errors['input.expiry_year'].should == [ 'The expiration year was blank.' ]
       end
       it 'should return is_invalid' do
-        payment_method = gateway.update_payment_method @pm.token, @params.merge(:expiry_year => 'abcd')
+        payment_method = @pm.update @params.merge(:expiry_year => 'abcd')
         payment_method.is_sensitive_data_valid.should be_true
         payment_method.is_expiration_valid.should be_false
         payment_method.errors['input.expiry_year'].should == [ 'The expiration year was invalid.' ]

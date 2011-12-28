@@ -1,5 +1,9 @@
 class Ronin::Base
+  include Ronin::Connection
+
   attr_accessor :attributes
+  attr_reader :messages
+
   def initialize
     @messages = []
   end
@@ -38,5 +42,7 @@ class Ronin::Base
 
   def replace(obj)
     self.attributes = obj.attributes
+    @errors = obj.errors
+    @messages = obj.messages
   end
 end
