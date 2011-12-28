@@ -31,6 +31,14 @@ class Ronin::Gateway
     process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
+  def redact_payment_method(token)
+    payment_method('redact', token)
+  end
+
+  def retain_payment_method(token)
+    payment_method('retain', token)
+  end
+
   # create transactions
   def authorize(payment_method_token, amount, processor_token, params={})
     create_transaction(payment_method_token, amount, processor_token, 'authorize', params)
@@ -96,10 +104,17 @@ class Ronin::Gateway
     process_response(Ronin::Transaction, 'transaction', response.body)
   end
 
+  def payment_method(method, token)
+    response = post("payment_methods/#{token}/#{method}", {})
+
+    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
+    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
+  end
+
   def process_response(klass, key, attributes)
     attributes = Hash.from_xml(attributes)[key]
     obj = klass.new
-    obj.attributes = attributes
+    obj.attributes = {:gateway => self}.merge(attributes)
     mod = Module.new do
       obj.attributes.keys.each do |k|
         next if k == "messages"

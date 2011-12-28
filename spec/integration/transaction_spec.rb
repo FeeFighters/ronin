@@ -16,17 +16,17 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        capture = gateway.capture(@authorized_transaction.id)
+        capture = @authorized_transaction.capture
         capture.success.should be_true
       end
 
       it 'should be successful for full amount' do
-        capture = gateway.capture(@authorized_transaction.id, 100.0)
+        capture = @authorized_transaction.capture(100.0)
         capture.success.should be_true
       end
 
       it 'should be successful for partial amount' do
-        capture = gateway.capture(@authorized_transaction.id, 50.0)
+        capture = @authorized_transaction.capture(50.0)
         capture.success.should be_true
       end
     end
@@ -34,7 +34,7 @@ describe "Transaction" do
     describe 'failures' do
       it 'should return processor.transaction - invalid with declined auth' do
         auth = gateway.authorize(@payment_method_token, 100.02, processor_token)  # declined auth
-        capture = gateway.capture(auth.id)
+        capture = auth.capture
 
         capture.success.should be_false
         capture.errors['processor.transaction'].should == [ 'This transaction type is not allowed.' ]
@@ -42,7 +42,7 @@ describe "Transaction" do
 
       it 'should return processor.transaction - declined' do
         auth = gateway.authorize(@payment_method_token, 100.00, processor_token)
-        capture = gateway.capture(auth.id, 100.02)
+        capture = auth.capture(100.02)
 
         capture.success.should be_false
         capture.errors['processor.transaction'].should == [ 'The card was declined.' ]
@@ -50,7 +50,7 @@ describe "Transaction" do
 
       it 'should return input.amount - invalid' do
         auth = gateway.authorize(@payment_method_token, 100.00, processor_token)
-        capture = gateway.capture(auth.id, 100.1)
+        capture = auth.capture(100.1)
 
         capture.success.should be_false
         capture.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
@@ -65,17 +65,17 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        reverse = gateway.reverse(@purchase.id)
+        reverse = @purchase.reverse
         reverse.success.should be_true
       end
 
       it 'should be successful for full amount' do
-        reverse = gateway.reverse(@purchase.id, 100.0)
+        reverse = @purchase.reverse(100.0)
         reverse.success.should be_true
       end
 
       it 'should be successful for partial amount' do
-        reverse = gateway.reverse(@purchase.id, 50.0)
+        reverse = @purchase.reverse(50.0)
         reverse.success.should be_true
       end
     end
@@ -86,7 +86,7 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        reverse = gateway.reverse(@authorize.id)
+        reverse = @authorize.reverse
         reverse.success.should be_true
       end
     end
@@ -94,7 +94,7 @@ describe "Transaction" do
     describe 'failures' do
       it 'should return input.amount - invalid' do
         purchase = gateway.purchase(@payment_method_token, 100.00, processor_token)
-        reverse = gateway.reverse(purchase.id, 100.10)
+        reverse = purchase.reverse(100.10)
         reverse.success.should be_false
         reverse.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
       end
@@ -108,17 +108,17 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        credit = gateway.credit(@purchase.id)
+        credit = @purchase.credit
         credit.success.should be_true
       end
 
       it 'should be successful for full amount' do
-        credit = gateway.credit(@purchase.id, 100.0)
+        credit = @purchase.credit(100.0)
         credit.success.should be_true
       end
 
       it 'should be successful for partial amount' do
-        credit = gateway.credit(@purchase.id, 50.0)
+        credit = @purchase.credit(50.0)
         credit.success.should be_true
       end
     end
@@ -129,7 +129,7 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        credit = gateway.credit(@authorize.id)
+        credit = @authorize.credit
         credit.success.should be_true
       end
     end
@@ -137,7 +137,7 @@ describe "Transaction" do
     describe 'failures' do
       it 'should return input.amount - invalid' do
         purchase = gateway.purchase(@payment_method_token, 100.00, processor_token)
-        credit = gateway.credit(purchase.id, 100.10)
+        credit = purchase.credit(100.10)
 
         credit.success.should be_false
         credit.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
@@ -152,7 +152,7 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        void = gateway.void(@authorize.id)
+        void = @authorize.void
         void.success.should be_true
       end
     end
@@ -163,7 +163,7 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        void = gateway.void(@purchase.id)
+        void = @purchase.void
         void.success.should be_true
       end
     end

@@ -35,4 +35,8 @@ class Ronin::Base
       self.errors[message.context] << message.description if self.errors[message.context].blank?
     end
   end
+
+  def replace(obj)
+    self.attributes = obj.attributes
+  end
 end

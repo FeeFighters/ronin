@@ -6,11 +6,23 @@ class Ronin::Transaction < Ronin::Base
 
   def process_response_errors(attributes)
     super(attributes)
+    add_messages(attributes['processor_response']['messages'])
+    add_messages(attributes['payment_method']['messages'])
+  end
 
-    processor_messages = attributes['processor_response']['messages']
-    add_messages(processor_messages)
+  def capture(amount = self.amount)
+    self.gateway.capture(self.token, amount)
+  end
 
-    payment_method_messages = attributes['payment_method']['messages']
-    add_messages(payment_method_messages)
+  def reverse(amount = self.amount)
+    self.gateway.reverse(self.token, amount)
+  end
+
+  def credit(amount = self.amount)
+    self.gateway.credit(self.token, amount)
+  end
+
+  def void(amount = self.amount)
+    self.gateway.void(self.token, amount)
   end
 end
