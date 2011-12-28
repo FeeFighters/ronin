@@ -1,6 +1,5 @@
 class Ronin::Base
   include Ronin::Connection
-
   attr_accessor :attributes
   attr_reader :messages
 

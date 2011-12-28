@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe "Transaction" do
-  let(:gateway) { Ronin::Gateway.new(DEFAULT_OPTIONS.clone) }
   let(:processor_token) {DEFAULT_OPTIONS[:processor_token]}
+  let(:gateway) { Ronin::Gateway.new(DEFAULT_OPTIONS.clone) }
+  let(:processor) { gateway.processor(processor_token) }
 
   before do
     @rand = rand(1000)
@@ -12,7 +13,7 @@ describe "Transaction" do
   describe 'capture' do
     describe 'success' do
       before do
-        @authorized_transaction = gateway.authorize(@payment_method_token, 100.0, processor_token)
+        @authorized_transaction = processor.authorize(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
@@ -33,7 +34,7 @@ describe "Transaction" do
 
     describe 'failures' do
       it 'should return processor.transaction - invalid with declined auth' do
-        auth = gateway.authorize(@payment_method_token, 100.02, processor_token)  # declined auth
+        auth = processor.authorize(@payment_method_token, 100.02)  # declined auth
         capture = auth.capture
 
         capture.success.should be_false
@@ -41,7 +42,7 @@ describe "Transaction" do
       end
 
       it 'should return processor.transaction - declined' do
-        auth = gateway.authorize(@payment_method_token, 100.00, processor_token)
+        auth = processor.authorize(@payment_method_token, 100.00)
         capture = auth.capture(100.02)
 
         capture.success.should be_false
@@ -49,7 +50,7 @@ describe "Transaction" do
       end
 
       it 'should return input.amount - invalid' do
-        auth = gateway.authorize(@payment_method_token, 100.00, processor_token)
+        auth = processor.authorize(@payment_method_token, 100.00)
         capture = auth.capture(100.1)
 
         capture.success.should be_false
@@ -61,7 +62,7 @@ describe "Transaction" do
   describe 'reverse' do
     describe 'on capture' do
       before do
-        @purchase = gateway.purchase(@payment_method_token, 100.0, processor_token)
+        @purchase = processor.purchase(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
@@ -82,7 +83,7 @@ describe "Transaction" do
 
     describe 'on authorize' do
       before do
-        @authorize = gateway.authorize(@payment_method_token, 100.0, processor_token)
+        @authorize = processor.authorize(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
@@ -93,7 +94,7 @@ describe "Transaction" do
 
     describe 'failures' do
       it 'should return input.amount - invalid' do
-        purchase = gateway.purchase(@payment_method_token, 100.00, processor_token)
+        purchase = processor.purchase(@payment_method_token, 100.00)
         reverse = purchase.reverse(100.10)
         reverse.success.should be_false
         reverse.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
@@ -104,7 +105,7 @@ describe "Transaction" do
   describe 'credit' do
     describe 'on capture' do
       before do
-        @purchase = gateway.purchase(@payment_method_token, 100.0, processor_token)
+        @purchase = processor.purchase(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
@@ -125,7 +126,7 @@ describe "Transaction" do
 
     describe 'on authorize' do
       before do
-        @authorize = gateway.authorize(@payment_method_token, 100.0, processor_token)
+        @authorize = processor.authorize(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
@@ -136,7 +137,7 @@ describe "Transaction" do
 
     describe 'failures' do
       it 'should return input.amount - invalid' do
-        purchase = gateway.purchase(@payment_method_token, 100.00, processor_token)
+        purchase = processor.purchase(@payment_method_token, 100.00)
         credit = purchase.credit(100.10)
 
         credit.success.should be_false
@@ -148,7 +149,7 @@ describe "Transaction" do
   describe 'void' do
     describe 'on authorized' do
       before do
-        @authorize = gateway.authorize(@payment_method_token, 100.0, processor_token)
+        @authorize = processor.authorize(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
@@ -159,7 +160,7 @@ describe "Transaction" do
 
     describe 'on captured' do
       before do
-        @purchase = gateway.purchase(@payment_method_token, 100.0, processor_token)
+        @purchase = processor.purchase(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do

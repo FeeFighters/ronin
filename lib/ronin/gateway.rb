@@ -25,13 +25,8 @@ class Ronin::Gateway
     process_response(Ronin::PaymentMethod, 'payment_method', response.body)
   end
 
-  # create transactions
-  def authorize(payment_method_token, amount, processor_token, params={})
-    create_transaction(payment_method_token, amount, processor_token, 'authorize', params)
-  end
-
-  def purchase(payment_method_token, amount, processor_token, params={})
-    create_transaction(payment_method_token, amount, processor_token, 'purchase', params)
+  def processor(processor_token)
+    Ronin::Processor.new(:processor_token => processor_token, :gateway=>self)
   end
 
   def find_transaction(reference_id)
@@ -50,15 +45,5 @@ class Ronin::Gateway
 
   def merchant_auth
     @merchant_auth
-  end
-
-  private
-
-  def create_transaction(token, amount, processor_token, method, params={})
-    transaction_params = params.merge(:payment_method_token => token, :amount => amount)
-    response = post("processors/#{processor_token}/#{method}", :transaction => transaction_params)
-
-    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
-    process_response(Ronin::Transaction, 'transaction', response.body)
   end
 end

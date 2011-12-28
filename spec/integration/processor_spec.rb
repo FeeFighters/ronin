@@ -7,11 +7,12 @@ describe "Creating transactions" do
   before :each do
     @rand = rand(1000)
     @payment_method_token = gateway.create_payment_method(payment_method_attributes).token
+    @processor = gateway.processor(processor_token)
   end
 
   describe "find_transaction" do
     it "should be successful" do
-      purchase = gateway.purchase(@payment_method_token, 100.0, processor_token, {
+      purchase = @processor.purchase(@payment_method_token, 100.0, {
         :descriptor => "descriptor",
         :custom => "custom_data",
         :billing_reference => "ABC123#{@rand}",
@@ -31,7 +32,7 @@ describe "Creating transactions" do
 
   describe 'purchase' do
     it 'should be successful' do
-      purchase = gateway.purchase(@payment_method_token, 100.0, processor_token, {
+      purchase = @processor.purchase(@payment_method_token, 100.0, {
         :descriptor => "descriptor",
         :custom => "custom_data",
         :billing_reference => "ABC123#{@rand}",
@@ -46,13 +47,13 @@ describe "Creating transactions" do
 
     describe 'failures' do
       it 'should return processor.transaction - declined' do
-        purchase = gateway.purchase(@payment_method_token, 1.02, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(@payment_method_token, 1.02, :billing_reference=>rand(1000))
         purchase.success.should be_false
         purchase.errors['processor.transaction'].should == [ 'The card was declined.' ]
       end
 
       it 'should return input.amount - invalid' do
-        purchase = gateway.purchase(@payment_method_token, 1.10, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(@payment_method_token, 1.10, :billing_reference=>rand(1000))
         purchase.success.should be_false
         purchase.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
       end
@@ -63,7 +64,7 @@ describe "Creating transactions" do
         params = payment_method_attributes.merge(:cvv=>'111')
         payment_method_token = gateway.create_payment_method(params).token
 
-        purchase = gateway.purchase(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['cvv_result_code'].should == 'M'
       end
@@ -71,7 +72,7 @@ describe "Creating transactions" do
       it 'should return processor.cvv_result_code = N' do
         params = payment_method_attributes.merge(:cvv=>'222')
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.purchase(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['cvv_result_code'].should == 'N'
       end
@@ -85,7 +86,7 @@ describe "Creating transactions" do
           :zip        => '10101',
         })
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.purchase(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['avs_result_code'].should == 'Y'
       end
@@ -98,7 +99,7 @@ describe "Creating transactions" do
         })
 
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.purchase(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['avs_result_code'].should == 'Z'
       end
@@ -110,7 +111,7 @@ describe "Creating transactions" do
           :zip        => '60610',
         })
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.purchase(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.purchase(payment_method_token, 1.00, :billing_reference=>rand(1000))
 
         purchase.success.should be_true
         purchase.processor_response['avs_result_code'].should == 'N'
@@ -121,7 +122,7 @@ describe "Creating transactions" do
 
   describe 'authorize' do
     it 'should be successful' do
-      purchase = gateway.authorize(@payment_method_token, 100.0, processor_token, {
+      purchase = @processor.authorize(@payment_method_token, 100.0, {
         :descriptor => "descriptor",
         :custom => "custom_data",
         :billing_reference => "ABC123#{@rand}",
@@ -136,12 +137,12 @@ describe "Creating transactions" do
 
     describe 'failures' do
       it 'should return processor.transaction - declined' do
-        authorize = gateway.authorize(@payment_method_token, 1.02, processor_token, :billing_reference=>rand(1000))
+        authorize = @processor.authorize(@payment_method_token, 1.02, :billing_reference=>rand(1000))
         authorize.success.should be_false
         authorize.errors['processor.transaction'].should == [ 'The card was declined.' ]
       end
       it 'should return input.amount - invalid' do
-        authorize = gateway.authorize(@payment_method_token, 1.10, processor_token, :billing_reference=>rand(1000))
+        authorize = @processor.authorize(@payment_method_token, 1.10, :billing_reference=>rand(1000))
         authorize.success.should be_false
         authorize.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
       end
@@ -152,7 +153,7 @@ describe "Creating transactions" do
         params = payment_method_attributes.merge(:cvv=>'111')
         payment_method_token = gateway.create_payment_method(params).token
 
-        purchase = gateway.authorize(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.authorize(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['cvv_result_code'].should == 'M'
       end
@@ -160,7 +161,7 @@ describe "Creating transactions" do
       it 'should return processor.cvv_result_code = N' do
         params = payment_method_attributes.merge(:cvv=>'222')
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.authorize(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.authorize(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['cvv_result_code'].should == 'N'
       end
@@ -174,7 +175,7 @@ describe "Creating transactions" do
           :zip        => '10101',
         })
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.authorize(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.authorize(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['avs_result_code'].should == 'Y'
       end
@@ -187,7 +188,7 @@ describe "Creating transactions" do
         })
 
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.authorize(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.authorize(payment_method_token, 1.00, :billing_reference=>rand(1000))
         purchase.success.should be_true
         purchase.processor_response['avs_result_code'].should == 'Z'
       end
@@ -199,7 +200,7 @@ describe "Creating transactions" do
           :zip        => '60610',
         })
         payment_method_token = gateway.create_payment_method(params).token
-        purchase = gateway.authorize(payment_method_token, 1.00, processor_token, :billing_reference=>rand(1000))
+        purchase = @processor.authorize(payment_method_token, 1.00, :billing_reference=>rand(1000))
 
         purchase.success.should be_true
         purchase.processor_response['avs_result_code'].should == 'N'
@@ -207,3 +208,4 @@ describe "Creating transactions" do
     end
   end
 end
+
