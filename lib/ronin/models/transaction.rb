@@ -4,6 +4,10 @@ class Ronin::Transaction < Ronin::Base
     self.attributes["transaction_token"]
   end
 
+  def amount
+    self.attributes["amount"]
+  end
+
   def process_response_errors(attributes)
     super(attributes)
     add_messages(attributes['processor_response']['messages'])
