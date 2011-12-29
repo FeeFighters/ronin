@@ -5,7 +5,7 @@ class Ronin::Gateway
   include Ronin::Connection
 
   def initialize(options={})
-    @site = options[:site]
+    @site = options[:site] || 'https://api.samurai.feefighters.com/v1/'
 
     @merchant_auth = {
       :username =>options[:merchant_key],
