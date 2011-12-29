@@ -4,6 +4,7 @@ class Ronin::Base
   attr_reader :messages
 
   def initialize
+    @attributes = {}
     @messages = []
   end
 
