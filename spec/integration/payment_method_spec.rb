@@ -10,6 +10,7 @@ describe "PaymentMethod" do
   describe 'S2S #create' do
     it 'should be successful' do
       payment_method = gateway.create_payment_method(@params)
+      payment_method.errors.should be_blank
 
       gateway.find_payment_method(payment_method.token).tap do |pm|
         pm.is_sensitive_data_valid.should be_true
@@ -24,6 +25,7 @@ describe "PaymentMethod" do
         pm.last_four_digits.should == @params[:card_number][-4, 4]
         pm.expiry_month.should  == @params[:expiry_month].to_i
         pm.expiry_year.should   == @params[:expiry_year].to_i
+        pm.errors.should be_blank
       end
     end
 

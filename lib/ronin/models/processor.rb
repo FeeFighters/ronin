@@ -2,8 +2,8 @@ class Ronin::Processor < Ronin::Base
   attr_accessor :gateway
 
   def initialize(_attributes={})
-    self.attributes = {}
-    attributes['processor_token'] = _attributes.with_indifferent_access['processor_token']
+    super()
+    self.attributes['processor_token'] = _attributes.with_indifferent_access['processor_token']
     self.gateway = _attributes.with_indifferent_access['gateway']
     raise ArgumentError.new("Gateway not set") if gateway.nil?
   end

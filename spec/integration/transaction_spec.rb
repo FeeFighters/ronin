@@ -21,6 +21,21 @@ describe "Transaction" do
         capture.success.should be_true
       end
 
+      it "contains no error messages" do
+        capture = @authorized_transaction.capture
+        capture.success.should be_true
+
+        capture.errors.should be_blank
+      end
+
+      it "contains messages" do
+        capture = @authorized_transaction.capture
+        capture.success.should be_true
+
+        capture.messages.should be_present
+        capture.messages.map(&:description) =~ [ "The transaction was successful.", "The address and 9-digit ZIP match." ]
+      end
+
       it 'should be successful for full amount' do
         capture = @authorized_transaction.capture(100.0)
         capture.success.should be_true

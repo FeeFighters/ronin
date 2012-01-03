@@ -1,11 +1,11 @@
 class Ronin::Base
   include Ronin::Connection
-  attr_accessor :attributes
-  attr_reader :messages
+  attr_reader :messages, :errors, :attributes
 
   def initialize
     @attributes = {}
-    @messages = []
+    @errors     = {}
+    @messages   = []
   end
 
   def id
@@ -16,12 +16,10 @@ class Ronin::Base
     raise NoMethodError, "#token must be defined in classes inheriting from Ronin::Base"
   end
 
-  def errors
-    @errors ||= {}
-  end
-
   def process_response_errors(attributes)
-    @errors = {}
+    messages.clear
+    errors.clear
+
     messages_attributes = attributes['messages']
     if messages_attributes.present?
       # Sort the messages so that more-critical/relevant ones appear first, since only the first error is added to a field
@@ -35,14 +33,17 @@ class Ronin::Base
   def add_messages(messages_attributes)
     messages_attributes.each do |message_attributes|
       message = Ronin::Message.new(message_attributes)
-      self.errors[message.context] = self.errors[message.context] || []
-      self.errors[message.context] << message.description if self.errors[message.context].blank?
+      messages << message
+      if message.subclass == 'error'
+        self.errors[message.context] = self.errors[message.context] || []
+        self.errors[message.context] << message.description if self.errors[message.context].blank?
+      end
     end
   end
 
   def replace(obj)
-    self.attributes = obj.attributes
-    @errors = obj.errors
-    @messages = obj.messages
+    attributes.replace(obj.attributes)
+    errors.replace(obj.errors)
+    messages.replace(obj.messages)
   end
 end

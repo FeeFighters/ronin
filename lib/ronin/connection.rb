@@ -19,7 +19,8 @@ module Ronin::Connection
   def process_response(klass, key, attributes)
     attributes = Hash.from_xml(attributes)[key]
     obj = klass.new
-    obj.attributes = {'gateway' => self.gateway}.merge(attributes)
+    obj.attributes['gateway'] = self.gateway
+    obj.attributes.merge!(attributes)
     mod = Module.new do
       obj.attributes.keys.each do |k|
         next if k == "messages"
