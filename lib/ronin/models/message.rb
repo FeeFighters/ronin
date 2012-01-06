@@ -49,6 +49,18 @@ class Ronin::Message
     'info processor.avs_result_code N'  => 'The address and ZIP do not match.',
 
     # CVV Responses
+    'info processor.cvv_result_code 0'  => 'No response.',
+    'info processor.cvv_result_code M'  => 'Match.',
+    'info processor.cvv_result_code N'  => 'No match.',
+    'info processor.cvv_result_code P'  => 'Not processed.',
+    'info processor.cvv_result_code S'  => 'Merchant Ind no code present.',
+    'info processor.cvv_result_code S'  => 'Should have been present.', #we know this is a dup....this is what is in the docs RB/LB
+    'info processor.cvv_result_code U'  => 'Issuer not certified.',
+    'info processor.cvv_result_code I'  => 'Invalid.',
+    'info processor.cvv_result_code X'  => 'No response from card association.',
+    'info processor.cvv_result_code A'  => 'Not applicable.',
+
+    # CVV Responses on Input
     'error input.cvv declined' => 'The CVV code was not correct.',
 
     # Input validations

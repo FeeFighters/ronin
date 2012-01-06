@@ -37,5 +37,8 @@ describe "message responses" do
     message = Ronin::Message.new(:subclass=>'error', :context=>'processor.transaction', :key=>'declined_insufficient_funds')
     message.description.should == 'The transaction was declined due to insufficient funds.'
   end
-
+  it 'should display cvv response' do
+    message = Ronin::Message.new(:subclass=>'info', :context=>'processor.cvv_result_code', :key=>'0')
+    message.description.should == 'No response.'
+  end
 end
