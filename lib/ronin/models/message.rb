@@ -16,7 +16,7 @@ class Ronin::Message
     'info processor.transaction success'      => 'The transaction was successful.',
     'error processor.transaction declined'    => 'The card was declined.',
     'error processor.issuer call'             => 'Call the card issuer for further instructions.',
-    'error processor.issuer unavailable'      => 'The authorization did not respond within the alloted time.',
+    'error processor.issuer unavailable'      => 'The authorization did not respond within the allotted time.',
     'error input.card_number invalid'         => 'The card number was invalid.',
     'error input.expiry_month invalid'        => 'The expiration date month was invalid, or prior to today.',
     'error input.expiry_year invalid'         => 'The expiration date year was invalid, or prior to today.',
