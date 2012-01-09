@@ -15,7 +15,7 @@ describe "message responses" do
   end
   it 'should display processor_issuer_unavailable' do
     message = Ronin::Message.new(:subclass=>'error', :context=>'processor.issuer', :key=>'unavailable')
-    message.description.should == 'The authorization did not respond within the alloted time.'
+    message.description.should == 'The authorization did not respond within the allotted time.'
   end
   it 'should display input_card_number_invalid' do
     message = Ronin::Message.new(:subclass=>'error', :context=>'input.card_number', :key=>'invalid')
