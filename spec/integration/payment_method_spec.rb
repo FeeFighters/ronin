@@ -238,10 +238,11 @@ describe "PaymentMethod" do
         pm.expiry_year.should   == @params[:expiry_year].to_i
       end
     end
+
     it 'should fail on an invalid token' do
       lambda do
         gateway.find_payment_method('abc123')
-      end.should raise_error(Ronin::ResourceNotFound)
+      end.should raise_error(Ronin::ResourceNotFound, "Couldn't find PaymentMethod with token = abc123")
     end
   end
 

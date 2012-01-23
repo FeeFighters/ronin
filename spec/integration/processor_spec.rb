@@ -26,7 +26,7 @@ describe "Creating transactions" do
     it "should fail on an invalid token" do
       lambda do
         gateway.find_transaction('abc123')
-      end.should raise_error(Ronin::ResourceNotFound)
+      end.should raise_error(Ronin::ResourceNotFound, "Couldn't find Transaction with reference_id = abc123")
     end
   end
 
