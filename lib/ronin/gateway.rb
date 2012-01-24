@@ -15,13 +15,12 @@ class Ronin::Gateway
 
   def create_payment_method(params={})
     response = post('payment_methods', :payment_method => params)
-    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
+    process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 
   def find_payment_method(token)
     response = get('payment_methods', token)
-    handle_not_found(response) if response.code == 404
-    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
+    process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 
   def processor(processor_token)
@@ -30,8 +29,7 @@ class Ronin::Gateway
 
   def find_transaction(reference_id)
     response = get('transactions', reference_id)
-    handle_not_found(response) if response.code == 404
-    process_response(Ronin::Transaction, 'transaction', response.body)
+    process_response(Ronin::Transaction, 'transaction', response)
   end
 
   def gateway
@@ -44,10 +42,5 @@ class Ronin::Gateway
 
   def merchant_auth
     @merchant_auth
-  end
-
-  def handle_not_found(response)
-    messages = Hash.from_xml(response.body)["error"]["messages"]
-    raise Ronin::ResourceNotFound.new messages.first
   end
 end

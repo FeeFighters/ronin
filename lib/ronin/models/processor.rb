@@ -27,9 +27,7 @@ class Ronin::Processor < Ronin::Base
   def create_transaction(payment_method_token, amount, method, params={})
     transaction_params = params.merge(:payment_method_token => payment_method_token, :amount => amount)
     response = post("processors/#{token}/#{method}", :transaction => transaction_params)
-
-    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
-    process_response(Ronin::Transaction, 'transaction', response.body)
+    process_response(Ronin::Transaction, 'transaction', response)
   end
 end
 

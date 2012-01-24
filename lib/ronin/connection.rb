@@ -16,8 +16,10 @@ module Ronin::Connection
     request.perform
   end
 
-  def process_response(klass, key, attributes)
-    attributes = Hash.from_xml(attributes)[key]
+  def process_response(klass, key, response)
+    handle_not_found response if response.code == 404
+
+    attributes = Hash.from_xml(response.body)[key]
     obj = klass.new
     obj.attributes['gateway'] = self.gateway
     obj.attributes.merge!(attributes)
@@ -37,5 +39,10 @@ module Ronin::Connection
     obj.send(:extend, mod)
     obj.process_response_errors(obj.attributes)
     obj
+  end
+
+  def handle_not_found(response)
+    messages = Hash.from_xml(response.body)["error"]["messages"]
+    raise Ronin::ResourceNotFound.new messages.first
   end
 end

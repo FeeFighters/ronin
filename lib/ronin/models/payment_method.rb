@@ -12,16 +12,13 @@ class Ronin::PaymentMethod < Ronin::Base
 
   def update(params={})
     response = put('payment_methods', self.token, :payment_method => params)
-    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
-    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
+    process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 
   private
 
   def payment_method(method)
     response = post("payment_methods/#{token}/#{method}", {})
-
-    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
-    process_response(Ronin::PaymentMethod, 'payment_method', response.body)
+    process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 end

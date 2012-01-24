@@ -39,8 +39,6 @@ class Ronin::Transaction < Ronin::Base
   def transaction_method(method, amount)
     transaction_params = {:amount => amount}
     response = post("transactions/#{self.token}/#{method}", :transaction => transaction_params)
-
-    raise Ronin::ResourceNotFound.new(response.body) if response.code == 404
-    process_response(Ronin::Transaction, 'transaction', response.body)
+    process_response(Ronin::Transaction, 'transaction', response)
   end
 end

@@ -22,12 +22,6 @@ describe "Creating transactions" do
       transaction = gateway.find_transaction(purchase.reference_id)
       transaction.token.should == purchase.token
     end
-
-    it "should fail on an invalid token" do
-      lambda do
-        gateway.find_transaction('abc123')
-      end.should raise_error(Ronin::ResourceNotFound, "Couldn't find Transaction with reference_id = abc123")
-    end
   end
 
   describe 'purchase' do
