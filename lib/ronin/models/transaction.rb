@@ -30,8 +30,8 @@ class Ronin::Transaction < Ronin::Base
     transaction_method('credit', amount)
   end
 
-  def void(amount = self.amount)
-    transaction_method('void', amount)
+  def reverse(amount = self.amount)
+    transaction_method('reverse', amount)
   end
 
   private

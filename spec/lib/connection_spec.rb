@@ -21,7 +21,7 @@ describe "Ronin::Connection" do
       body = <<-xml
         <error>
           <echo>
-            <url>/v1/transactions/foo/void.xml</url>
+            <url>/v1/transactions/foo/reverse.xml</url>
             <request_method>POST</request_method>
             <payload>
               <transaction>

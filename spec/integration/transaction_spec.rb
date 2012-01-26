@@ -161,15 +161,15 @@ describe "Transaction" do
     end
   end
 
-  describe 'void' do
+  describe 'reverse' do
     describe 'on authorized' do
       before do
         @authorize = processor.authorize(@payment_method_token, 100.0)
       end
 
       it 'should be successful' do
-        void = @authorize.void
-        void.success.should be_true
+        reverse = @authorize.reverse
+        reverse.success.should be_true
       end
     end
 
@@ -179,8 +179,8 @@ describe "Transaction" do
       end
 
       it 'should be successful' do
-        void = @purchase.void
-        void.success.should be_true
+        reverse = @purchase.reverse
+        reverse.success.should be_true
       end
     end
   end
