@@ -42,7 +42,12 @@ module Ronin::Connection
   end
 
   def handle_not_found(response)
-    messages = Hash.from_xml(response.body)["error"]["messages"]
-    raise Ronin::ResourceNotFound.new messages.first
+    error = Hash.from_xml(response.body)["error"]
+
+    if error.present?
+      raise Ronin::ResourceNotFound.new error["messages"].first
+    else
+      raise Ronin::ResourceNotFound.new "An error occured. Please contact Samurai for more information"
+    end
   end
 end
