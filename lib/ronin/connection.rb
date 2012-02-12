@@ -2,17 +2,17 @@ module Ronin::Connection
   private
 
   def get(uri, id)
-    request = HTTParty::Request.new(Net::HTTP::Get, "#{self.gateway.site}#{uri}/#{id}.xml", :format => :xml, :basic_auth => self.gateway.merchant_auth)
+    request = HTTParty::Request.new(Net::HTTP::Get, "#{self.gateway.site}#{uri}/#{id}.xml", :headers => {'content-type' => 'text/xml'}, :format => :xml, :basic_auth => self.gateway.merchant_auth)
     request.perform
   end
 
-  def post(uri, params)
-    request = HTTParty::Request.new(Net::HTTP::Post, "#{self.gateway.site}#{uri}.xml", :body => params, :format => :xml, :basic_auth => self.gateway.merchant_auth)
+  def post(uri, xml)
+    request = HTTParty::Request.new(Net::HTTP::Post, "#{self.gateway.site}#{uri}.xml", :headers => {'content-type' => 'text/xml'}, :body => xml, :format => :xml, :basic_auth => self.gateway.merchant_auth)
     request.perform
   end
 
-  def put(uri, id, params)
-    request = HTTParty::Request.new(Net::HTTP::Put, "#{self.gateway.site}#{uri}/#{id}.xml", :body => params, :format => :xml, :basic_auth => self.gateway.merchant_auth)
+  def put(uri, id, xml)
+    request = HTTParty::Request.new(Net::HTTP::Put, "#{self.gateway.site}#{uri}/#{id}.xml", :headers => {'content-type' => 'text/xml'}, :body => xml, :format => :xml, :basic_auth => self.gateway.merchant_auth)
     request.perform
   end
 

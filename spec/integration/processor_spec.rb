@@ -51,6 +51,12 @@ describe "Creating transactions" do
         purchase.success.should be_false
         purchase.errors['input.amount'].should == [ 'The transaction amount was invalid.' ]
       end
+
+      it 'should raise Ronin::ResourceNotFound on invalid token' do
+        lambda {
+          @processor.purchase('bad_token', 1.10, :billing_reference=>rand(1000))
+        }.should raise_error(Ronin::ResourceNotFound, "Couldn't find PaymentMethod with token = bad_token")
+      end
     end
 
     describe 'cvv responses' do

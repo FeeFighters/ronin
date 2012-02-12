@@ -14,7 +14,7 @@ class Ronin::Gateway
   end
 
   def create_payment_method(params={})
-    response = post('payment_methods', :payment_method => params)
+    response = post('payment_methods', params.to_xml(:root=>'payment_method'))
     process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 

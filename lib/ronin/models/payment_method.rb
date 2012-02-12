@@ -11,14 +11,14 @@ class Ronin::PaymentMethod < Ronin::Base
   end
 
   def update(params={})
-    response = put('payment_methods', self.token, :payment_method => params)
+    response = put('payment_methods', self.token, params.to_xml(:root=>'payment_method'))
     process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 
   private
 
   def payment_method(method)
-    response = post("payment_methods/#{token}/#{method}", {})
+    response = post("payment_methods/#{token}/#{method}", '')
     process_response(Ronin::PaymentMethod, 'payment_method', response)
   end
 end

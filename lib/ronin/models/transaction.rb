@@ -38,7 +38,7 @@ class Ronin::Transaction < Ronin::Base
 
   def transaction_method(method, amount)
     transaction_params = {:amount => amount}
-    response = post("transactions/#{self.token}/#{method}", :transaction => transaction_params)
+    response = post("transactions/#{self.token}/#{method}", transaction_params.to_xml(:root=>'transaction'))
     process_response(Ronin::Transaction, 'transaction', response)
   end
 end

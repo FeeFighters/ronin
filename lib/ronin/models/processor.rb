@@ -26,7 +26,7 @@ class Ronin::Processor < Ronin::Base
 
   def create_transaction(payment_method_token, amount, method, params={})
     transaction_params = params.merge(:payment_method_token => payment_method_token, :amount => amount)
-    response = post("processors/#{token}/#{method}", :transaction => transaction_params)
+    response = post("processors/#{token}/#{method}", transaction_params.to_xml(:root=>'transaction'))
     process_response(Ronin::Transaction, 'transaction', response)
   end
 end
