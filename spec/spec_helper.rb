@@ -16,7 +16,12 @@ end
 include Samurai::Helpers
 
 # uncomment below to see requests
-# require 'net-http-spy'
+#require 'net-http-spy'
+#Net::HTTP.http_logger_options = {
+#  :body => true,
+#  :trace => true,
+#  :verbose => true,
+#}
 
 require 'ronin'
 
